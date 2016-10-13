@@ -1,2 +1,10 @@
 Hello World!
-:P=OP=OP=OP
+<<<<<<< HEAD
+
+
+
+
+:)
+=======
+:P
+>>>>>>> origin/master
