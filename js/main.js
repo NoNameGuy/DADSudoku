@@ -9,10 +9,11 @@
     "use strict";
 
     $( document ).ready(function() {
-    // jQuery Code
-    //$('.col-xs-6 col-sm-4 text-center:last-child').hide();
-    //$('div[class='col-xs-6 col-sm-4 text-center']:last-child').hide();
-    $(".col-xs-6:last-child").hide()
+    	// jQuery Code
+    	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
+
+    	//Alteracao das informacoes do segundo author (jessica) //TODO
+    	$(".col-xs-6:nth-child(3)").children(".thumbnail").children(".caption").hide();
 
     });
 
