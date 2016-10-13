@@ -9,23 +9,15 @@
     "use strict";
 
     $( document ).ready(function() {
-<<<<<<< HEAD
+    	var NUM_STUDENTS = 3;
     	// jQuery Code
     	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
-
-    	//Alteracao das informacoes do segundo author (jessica) //TODO
-    	$(".col-xs-6:nth-child(3)").children(".thumbnail").children(".caption").hide();
-=======
-      var NUM_STUDENTS = 3;
->>>>>>> origin/master
-
-      $(".col-xs-6:last-child").hide() //ESCONDE O ULTIMO AUTOR
       
-      for (var i = 1; i <= NUM_STUDENTS; i++)
-      	changeStudentPhoto(i);	
+		for (var i = 1; i <= NUM_STUDENTS; i++)
+	    	changeImageSize(i);	
     });
 
-    function changeStudentPhoto(nrStudent){
+    function changeImageSize(nrStudent){
     	// Wrap photo in standard size
     	var photoSize = 400;
     	
