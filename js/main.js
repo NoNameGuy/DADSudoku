@@ -1,3 +1,5 @@
+//2140727 - Alberto Trindade
+//2140730 - Jessica Machado
 //2110117 - Paulo Vieira
 
 
@@ -10,21 +12,34 @@
 
     $( document ).ready(function() {
     	var NUM_STUDENTS = 3;
+    	var numbers = new Array(2140727, 2140730, 2110117);
+		var names = new Array("Alberto", "Jéssica", "Paulo");
+
     	// jQuery Code
     	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
       
-		for (var i = 1; i <= NUM_STUDENTS; i++)
-	    	changeImageSize(i);	
+    	changeProjectAuthors(NUM_STUDENTS, numbers, names);
     });
 
-    function changeImageSize(nrStudent){
-    	// Wrap photo in standard size
-    	var photoSize = 400;
-    	
-    	if(nrStudent < 1 || nrStudent > 3)
-    		return;
-    	
-    	$(".col-xs-6:nth-child("+(nrStudent+1)+") img").css('height', photoSize).css('width', photoSize);
+    function changeProjectAuthors(numStudents, numbers, names){
+		for (var i = 1; i <= numStudents; i++)
+			changeAuthor(i, numbers[i-1], names[i-1]);	
     }
 
+    function changeAuthor(curAuthor, number, name){
+    	var photoSize = 400;
+
+    	if(curAuthor < 1 || curAuthor > 3)
+    		return;
+
+		var identifier = ".col-xs-6:nth-child("+(curAuthor+1)+")";
+
+		// TODO: Instead of making 3 jQuery successive calls, store in a variable the access of parent's div.
+    	// Change students' photo size
+    	$(identifier+" img").css('height', photoSize).css('width', photoSize);
+    	// Change students' number
+    	$(identifier+" .caption h3").text(number);
+    	// Change students' name
+		$(identifier+" .caption p").text(name);	
+    }
 })();
