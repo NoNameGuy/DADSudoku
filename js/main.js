@@ -76,8 +76,7 @@
 	}
 
   function cleanBoard(){
-    $("input.with-value").val('')
-    $("input.with-value").removeClass('with-value');
+    $("input.with-value").val('').removeClass('with-value');
     $("input:disabled.initial").removeAttr("disabled").val('')
   }
 
@@ -110,13 +109,14 @@
     var $colCollection = $('input[data-column='+column+']');    
     
     // Se a linha ou a coluna estiverem preenchidas, faz animação
-    if(isFullRow($rowCollection))
+    if(isFullRow($rowCollection)){
       // animate($rowCollection);
-      ;
+      console.log("Row full");
+    }
     
-    if(isFullCol($colCollection))
+    if(isFullCol($colCollection)){
       // animate($colCollection);
-      ;
+    }
     
     // TODO: Verificar se o quadrante está completo para mostrar animação
     // isFullQuadrant();
