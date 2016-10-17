@@ -10,7 +10,6 @@
 		var selectedMode;
 
     $( document ).ready(function() {
-
     	var NUM_STUDENTS = 3;
     	var numbers = new Array(2140727, 2140730, 2110117);
 		  var names = new Array("Alberto", "Jéssica", "Paulo");
@@ -19,6 +18,9 @@
     	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
 
     	changeProjectAuthors(NUM_STUDENTS, numbers, names);
+      
+      // LISTENERS creation
+      cellsOnInsertListener();
     });
 
     function changeProjectAuthors(numStudents, numbers, names){
@@ -32,15 +34,15 @@
     	if(curAuthor < 1 || curAuthor > 3)
     		return;
 
-		var identifier = ".col-xs-6:nth-child("+(curAuthor+1)+")";
+		  var identifier = ".col-xs-6:nth-child("+(curAuthor+1)+")";
 
-		// TODO: Instead of making 3 jQuery successive calls, store in a variable the access of parent's div.
+		  // TODO: Instead of making 3 jQuery successive calls, store in a variable the access of parent's div.
     	// Change students' photo size
     	$(identifier+" img").css('height', photoSize).css('width', photoSize);
     	// Change students' number
     	$(identifier+" .caption h3").text(number);
     	// Change students' name
-		$(identifier+" .caption p").text(name);
+		  $(identifier+" .caption p").text(name);
     }
 
 	function callAPIRest(){
@@ -72,7 +74,7 @@
   function cleanBoard(){
 
     $("input.with-value").val('')
-
+    $("input.with-value").removeClass('with-value');
     $("input:disabled.initial").removeAttr("disabled").val('')
 
   }
@@ -86,6 +88,28 @@
 
   function delay5Seconds(functionToExecute){
     setTimeout(functionToExecute, 5000);
+  }
+
+  function cellsOnInsertListener(){
+    $('input[data-column][data-line]').change(function(){
+      insertNumber($(this));
+    }).change();
+  }
+
+  function insertNumber($elem){
+    var num = $elem.val();
+    var row = $elem.attr('data-line');
+    var column = $elem.attr('data-column');
+
+    if(num < 1 || num > 9 || num === undefined){
+      return;
+    }
+    
+    $elem.addClass('with-value');
+    
+    // TODO: Verificar se a linha e/ou coluna está completa para mostrar animação
+    // TODO: Verificar se o quadrante está completo para mostrar animação
+    // TODO: Verificar fim de jogo
   }
 
 })();
