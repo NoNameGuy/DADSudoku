@@ -101,15 +101,53 @@
     var row = $elem.attr('data-line');
     var column = $elem.attr('data-column');
 
+    // Se o número tiver fora do intervalo, apaga-o
     if(num < 1 || num > 9 || num === undefined){
+      $elem.val(undefined);
       return;
     }
     
+    // Coloca o elemento com estado "com valor"
     $elem.addClass('with-value');
     
-    // TODO: Verificar se a linha e/ou coluna está completa para mostrar animação
+    // Obtem os arrays com a respetiva linha e coluna
+    var $rowCollection = $('input[data-line='+row+']');
+    var $colCollection = $('input[data-column='+column+']');    
+    
+    // Se a linha ou a coluna estiverem preenchidas, faz animação
+    if(isFullRow($rowCollection))
+      // animate($rowCollection);
+    
+    if(isFullCol($colCollection))
+      // animate($colCollection);
+    
     // TODO: Verificar se o quadrante está completo para mostrar animação
+    // isFullQuadrant();
+    
     // TODO: Verificar fim de jogo
+    // isGameOver();
   }
 
+  function isCellCollectionFull($collection){
+    var isFull = true;
+    var constructionArray = Array(10);
+    var curPos = 0;
+    var curValue;
+    $.each($collection, function(key, value){
+      curValue = $(this).val();
+      if(curValue === "" || $.inArray(curValue, constructionArray) != -1){
+        isFull = false;
+      }
+      constructionArray[curPos++] = curValue;
+    });
+    return isFull;
+  }
+
+  function isFullCol($columnCollection){
+    return isCellCollectionFull($columnCollection);
+  }
+
+  function isFullRow($rowCollection){
+    return isCellCollectionFull($rowCollection);
+  }
 })();
