@@ -84,4 +84,8 @@
     callAPIRest(); //callapirest para chamar o board
 });
 
+  function delay5Seconds(functionToExecute){
+    setTimeout(functionToExecute, 5000);
+  }
+
 })();
