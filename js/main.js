@@ -49,8 +49,18 @@
 
 		$.get("http://198.211.118.123:8080/board/"+mode)
 			.done(function(data) {
-				//iniciar tabela com o "data"
-				$("#loading").addClass("invisible");//loading -> $("#loading").addClass("invisible");
+
+        //iniciar tabela com o "data"
+    for(var i = 0; i < data.length; i++){
+
+      $("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
+      .val(data[i].value)
+      .attr("value", data[i].value)
+      .addClass("initial")
+      .attr("disabled", true);
+    }
+
+				$("#loading").addClass("invisible"); //loading -> $("#loading").addClass("invisible");
 
 			}).fail(function() {
 				console.log("FAIL CALLING API REST")
@@ -58,19 +68,20 @@
 
 	}
 
+
   function cleanBoard(){
 
+    $("input.with-value").val('')
 
+    $("input:disabled.initial").removeAttr("disabled").val('')
 
   }
 
-	$("btn-new").click(function(){
-
-		event.preventDefault();
+  $("#btn-new").click(function() {
+    event.preventDefault();
     $("#loading").removeClass("invisible");
-		cleanBoard(); //limpar tabela
-		callAPIRest(); //callapirest para chamar o board
-
-	})
+    cleanBoard(); //limpar tabela
+    callAPIRest(); //callapirest para chamar o board
+});
 
 })();
