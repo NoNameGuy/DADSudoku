@@ -3,31 +3,27 @@
 //2110117 - Paulo Vieira
 
 
-// Implementation:
-
-//GET BOARD DIFF
-//$.get(URL,data,function(data,status,xhr),dataType)
 (function(){
     "use strict";
-			
+
 		var difficulty;
 		var selectedMode;
-		
+
     $( document ).ready(function() {
 
     	var NUM_STUDENTS = 3;
     	var numbers = new Array(2140727, 2140730, 2110117);
-		var names = new Array("Alberto", "Jéssica", "Paulo");
+		  var names = new Array("Alberto", "Jéssica", "Paulo");
 
     	// jQuery Code
     	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
-      
+
     	changeProjectAuthors(NUM_STUDENTS, numbers, names);
     });
 
     function changeProjectAuthors(numStudents, numbers, names){
-		for (var i = 1; i <= numStudents; i++)
-			changeAuthor(i, numbers[i-1], names[i-1]);	
+		    for (var i = 1; i <= numStudents; i++)
+			  changeAuthor(i, numbers[i-1], names[i-1]);
     }
 
     function changeAuthor(curAuthor, number, name){
@@ -44,30 +40,37 @@
     	// Change students' number
     	$(identifier+" .caption h3").text(number);
     	// Change students' name
-		$(identifier+" .caption p").text(name);	
+		$(identifier+" .caption p").text(name);
     }
-	
-	function callAPIRest{
-		
+
+	function callAPIRest(){
+
 		var mode = $("#select-mode option:selected").val();
-		
+
 		$.get("http://198.211.118.123:8080/board/"+mode)
 			.done(function(data) {
 				//iniciar tabela com o "data"
-				//loading -> $("#loading").addClass("invisible");
-				
+				$("#loading").addClass("invisible");//loading -> $("#loading").addClass("invisible");
+
 			}).fail(function() {
 				console.log("FAIL CALLING API REST")
 			});
-		
+
 	}
 
+  function cleanBoard(){
+
+
+
+  }
+
 	$("btn-new").click(function(){
-		
+
 		event.preventDefault();
-		//limpar tabela
-		//callapirest para chamar o board
-		
+    $("#loading").removeClass("invisible");
+		cleanBoard(); //limpar tabela
+		callAPIRest(); //callapirest para chamar o board
+
 	})
 
 })();
