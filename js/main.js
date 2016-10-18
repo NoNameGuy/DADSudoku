@@ -27,12 +27,8 @@
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
     
     // LISTENERS creation
-<<<<<<< HEAD
-    cellsOnInsertListener();
-
-=======
     cellsOnChangeListener();
->>>>>>> origin/master
+
     // Evento do botão "New Game"
     $("#btn-new").click(function() {
       event.preventDefault();
@@ -127,7 +123,6 @@
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
       animate($rowCollection);
-      console.log("Row full");
     }
     
     if(isFullCol($colCollection)){
@@ -135,7 +130,8 @@
     }
     
     if(isFullQuadrant($quadrantCollection)){
-//      animate($quadrantCollection);
+      animate($quadrantCollection);
+      console.log("Quadrant is full!");
     }
     
     // TODO: Verificar fim de jogo
@@ -147,7 +143,7 @@
     var constructionArray = Array(10);
     var curPos = 0;
     var curValue;
-    $.each($collection, function(key, value){
+    $.each($collection, function(){
       curValue = $(this).val();
       if(curValue === "" || $.inArray(curValue, constructionArray) != -1){
         isFull = false;
@@ -165,7 +161,7 @@
     return isCellCollectionFull($rowCollection);
   }
 
-<<<<<<< HEAD
+
   function animateCell($cell){
     $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); //Animate parent (border)
     
@@ -184,7 +180,7 @@
     });
   }
 
-=======
+
   function isFullQuadrant($quadrantCollection){
     return isCellCollectionFull($quadrantCollection);
   }
@@ -193,7 +189,7 @@
     // Get the position of the element in the quadrant
     var quadrantInitRow, quadrantInitColumn;
     var arrayIterator = 0;
-    var myArray = new Array(CONST_NUM_COLUMNS*CONST_NUM_ROWS);
+    var $myArray;
     var i, j;
 
     // Point to the init of the quadrant
@@ -208,10 +204,10 @@
     // Convert the quadrant to a linear array structure
     for(i = 0; i < CONST_NUM_ROWS; i++){
       for(j = 0; j < CONST_NUM_COLUMNS; j++){
-        myArray[arrayIterator++] = $( 'input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']' );
+        $myArray[arrayIterator++] = $( 'input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']' );
       }
     }
-    return myArray;
+    return $myArray;
   }
->>>>>>> origin/master
+
 })();
