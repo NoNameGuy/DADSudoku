@@ -2,26 +2,37 @@
 //2140730 - Jessica Machado
 //2110117 - Paulo Vieira
 
+// TODO: Impedir o jogador de colocar números se ainda não foi feito NewGame
+
 
 (function(){
   "use strict";
 
+  // CONSTANTS
+  var CONST_NUM_ROWS, CONST_NUM_COLUMNS;
+  var CONST_NUM_STUDENTS = 3;
+  CONST_NUM_COLUMNS = CONST_NUM_ROWS = 3;
+
+  // GLOBAL SCOPE VARIABLES
 	var difficulty;
 	var selectedMode;
 
   $( document ).ready(function() {
-  	var NUM_STUDENTS = 3;
   	var numbers = new Array(2140727, 2140730, 2110117);
 	  var names = new Array("Alberto", "Jéssica", "Paulo");
 
   	// jQuery Code
   	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
 
-  	changeProjectAuthors(NUM_STUDENTS, numbers, names);
+  	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
     
     // LISTENERS creation
+<<<<<<< HEAD
     cellsOnInsertListener();
 
+=======
+    cellsOnChangeListener();
+>>>>>>> origin/master
     // Evento do botão "New Game"
     $("#btn-new").click(function() {
       event.preventDefault();
@@ -40,7 +51,7 @@
   function changeAuthor(curAuthor, number, name){
   	var photoSize = 400;
 
-  	if(curAuthor < 1 || curAuthor > 3)
+  	if(curAuthor < 1 || curAuthor > CONST_NUM_STUDENTS)
   		return;
 
 	  var identifier = ".col-xs-6:nth-child("+(curAuthor+1)+")";
@@ -61,14 +72,13 @@
 			.done(function(data) {
 
         //iniciar tabela com o "data"
-    for(var i = 0; i < data.length; i++){
-
-      $("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
-      .val(data[i].value)
-      .attr("value", data[i].value)
-      .addClass("initial")
-      .attr("disabled", true);
-    }
+        for(var i = 0; i < data.length; i++){
+          $("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
+          .val(data[i].value)
+          .attr("value", data[i].value)
+          .addClass("initial")
+          .attr("disabled", true);
+        }
 
 				$("#loading").addClass("invisible"); //loading -> $("#loading").addClass("invisible");
 
@@ -86,10 +96,13 @@
     setTimeout(functionToExecute, 5000);
   }
 
-  function cellsOnInsertListener(){
+  function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
-      insertNumber($(this));
-    }).change();
+      if($(this).val() === "")
+        $(this).removeClass('with-value');
+      else
+        insertNumber($(this));
+    });
   }
 
   function insertNumber($elem){
@@ -108,7 +121,8 @@
     
     // Obtem os arrays com a respetiva linha e coluna
     var $rowCollection = $('input[data-line='+row+']');
-    var $colCollection = $('input[data-column='+column+']');    
+    var $colCollection = $('input[data-column='+column+']');
+    var $quadrantCollection = getArrayFromMatrixQuadrant(row, column);
     
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
@@ -120,8 +134,9 @@
       animate($colCollection);
     }
     
-    // TODO: Verificar se o quadrante está completo para mostrar animação
-    // isFullQuadrant();
+    if(isFullQuadrant($quadrantCollection)){
+//      animate($quadrantCollection);
+    }
     
     // TODO: Verificar fim de jogo
     // isGameOver();
@@ -150,6 +165,7 @@
     return isCellCollectionFull($rowCollection);
   }
 
+<<<<<<< HEAD
   function animateCell($cell){
     $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); //Animate parent (border)
     
@@ -168,4 +184,34 @@
     });
   }
 
+=======
+  function isFullQuadrant($quadrantCollection){
+    return isCellCollectionFull($quadrantCollection);
+  }
+  
+  function getArrayFromMatrixQuadrant(row, column){
+    // Get the position of the element in the quadrant
+    var quadrantInitRow, quadrantInitColumn;
+    var arrayIterator = 0;
+    var myArray = new Array(CONST_NUM_COLUMNS*CONST_NUM_ROWS);
+    var i, j;
+
+    // Point to the init of the quadrant
+    for(i = 0; i < row % CONST_NUM_ROWS; i++)
+      for(j = 0; j < column % CONST_NUM_COLUMNS; j++)
+        ;
+      
+    // Get the quadrant initial row and column
+    quadrantInitRow = (row-i);
+    quadrantInitColumn = (column-j);
+
+    // Convert the quadrant to a linear array structure
+    for(i = 0; i < CONST_NUM_ROWS; i++){
+      for(j = 0; j < CONST_NUM_COLUMNS; j++){
+        myArray[arrayIterator++] = $( 'input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']' );
+      }
+    }
+    return myArray;
+  }
+>>>>>>> origin/master
 })();
