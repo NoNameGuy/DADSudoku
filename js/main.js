@@ -84,7 +84,7 @@
 	}
 
   function cleanBoard(){
-    $("input.with-value").val('').removeClass('with-value');
+    $("input.with-value").val('').removeClass('with-value').removeAttr('style');
     $("input:disabled.initial").removeAttr("disabled").val('')
   }
 
@@ -94,10 +94,13 @@
 
   function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
-      if($(this).val() === "")
+      console.log("change!");
+      if($(this).val() === ""){
         $(this).removeClass('with-value');
-      else
+      }
+      else{
         insertNumber($(this));
+      }
     });
   }
 
@@ -107,7 +110,7 @@
     var column = $elem.attr('data-column');
 
     // Se o número tiver fora do intervalo, apaga-o
-    if(num < 1 || num > 9 || num === undefined){
+    if(num < 0 || num > 9){
       $elem.val(undefined);
       return;
     }
@@ -119,7 +122,7 @@
     var $rowCollection = $('input[data-line='+row+']');
     var $colCollection = $('input[data-column='+column+']');
     var $quadrantCollection = getArrayFromMatrixQuadrant(row, column);
-    
+
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
       animate($rowCollection);
@@ -131,7 +134,6 @@
     
     if(isFullQuadrant($quadrantCollection)){
       animate($quadrantCollection);
-      console.log("Quadrant is full!");
     }
     
     // TODO: Verificar fim de jogo
@@ -161,50 +163,42 @@
     return isCellCollectionFull($rowCollection);
   }
 
+  function isFullQuadrant($quadrantCollection){
+    return isCellCollectionFull($quadrantCollection);
+  }
 
   function animateCell($cell){
     $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); //Animate parent (border)
     
-    if($cell.hasClass("with-value")){ //If is a cell with value, animate from orange to the original color (orange with opacity)
+    if($cell.hasClass("with-value")){ //If it is a cell with value, animate from orange to the original color (orange with opacity)
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "rgba(234,162,89,0.6)" }, 500);
-    }else if(!$cell.hasClass("initial")){ //If is a cell with no value (and without initial class), animate from orange to the original white
+    }else if(!$cell.hasClass("initial")){ //If it is a cell with no value (and without initial class), animate from orange to the original white
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
     }
   }
 
   function animate($collection){
     $collection.each(function(index){
-      $(this).delay(100*index);
-      $(this).parent().delay(100*index);
+      $(this).delay(100*index).parent().delay(100*index);
       animateCell($(this));
     });
-  }
-
-
-  function isFullQuadrant($quadrantCollection){
-    return isCellCollectionFull($quadrantCollection);
   }
   
   function getArrayFromMatrixQuadrant(row, column){
     // Get the position of the element in the quadrant
     var quadrantInitRow, quadrantInitColumn;
-    var arrayIterator = 0;
     var $myArray;
-    var i, j;
 
-    // Point to the init of the quadrant
-    for(i = 0; i < row % CONST_NUM_ROWS; i++)
-      for(j = 0; j < column % CONST_NUM_COLUMNS; j++)
-        ;
-      
     // Get the quadrant initial row and column
-    quadrantInitRow = (row-i);
-    quadrantInitColumn = (column-j);
+    quadrantInitRow = row - (row % CONST_NUM_ROWS);
+    quadrantInitColumn = column - (column % CONST_NUM_COLUMNS);
 
+    $myArray = $('input[data-line='+quadrantInitRow+'][data-column='+quadrantInitColumn+']');
+    
     // Convert the quadrant to a linear array structure
-    for(i = 0; i < CONST_NUM_ROWS; i++){
-      for(j = 0; j < CONST_NUM_COLUMNS; j++){
-        $myArray[arrayIterator++] = $( 'input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']' );
+    for(var i = 0; i < CONST_NUM_ROWS; i++){
+      for(var j = 0; j < CONST_NUM_COLUMNS; j++){
+        $myArray = $myArray.add($('input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']'));
       }
     }
     return $myArray;
