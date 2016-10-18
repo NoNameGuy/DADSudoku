@@ -21,13 +21,15 @@
     
     // LISTENERS creation
     cellsOnInsertListener();
+
     // Evento do botão "New Game"
     $("#btn-new").click(function() {
-    event.preventDefault();
-    $("#loading").removeClass("invisible");
-    cleanBoard(); //limpar tabela
-    callAPIRest(); //callapirest para chamar o board
+      event.preventDefault();
+      $("#loading").removeClass("invisible");
+      cleanBoard(); //limpar tabela
+      callAPIRest(); //callapirest para chamar o board
     });
+
   });
 
   function changeProjectAuthors(numStudents, numbers, names){
@@ -110,12 +112,12 @@
     
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
-      // animate($rowCollection);
+      animate($rowCollection);
       console.log("Row full");
     }
     
     if(isFullCol($colCollection)){
-      // animate($colCollection);
+      animate($colCollection);
     }
     
     // TODO: Verificar se o quadrante está completo para mostrar animação
@@ -147,4 +149,23 @@
   function isFullRow($rowCollection){
     return isCellCollectionFull($rowCollection);
   }
+
+  function animateCell($cell){
+    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); //Animate parent (border)
+    
+    if($cell.hasClass("with-value")){ //If is a cell with value, animate from orange to the original color (orange with opacity)
+      $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "rgba(234,162,89,0.6)" }, 500);
+    }else if(!$cell.hasClass("initial")){ //If is a cell with no value (and without initial class), animate from orange to the original white
+      $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
+    }
+  }
+
+  function animate($collection){
+    $collection.each(function(index){
+      $(this).delay(100*index);
+      $(this).parent().delay(100*index);
+      animateCell($(this));
+    });
+  }
+
 })();
