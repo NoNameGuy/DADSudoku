@@ -2,9 +2,6 @@
 //2140730 - Jessica Machado
 //2110117 - Paulo Vieira
 
-// TODO: Impedir o jogador de jogar "e" || "E" || + || - || . || ,
-
-
 (function(){
   "use strict";
 
@@ -29,7 +26,7 @@
     
     // LISTENERS creation
     cellsOnChangeListener();
-
+    cellsOnKeyUpListener();
     cellsOnDoubleClickListener();
 
     // Evento do botão "New Game"
@@ -124,6 +121,15 @@
       else{
         $(this).val("");
         showError();
+      }
+    });
+  }
+
+  function cellsOnKeyUpListener(){
+    $('input[data-column][data-line]').keyup(function(){
+      var $elem = $(this);
+      if($elem.val() === ''){
+        $elem.val('');
       }
     });
   }
