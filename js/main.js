@@ -2,7 +2,6 @@
 //2140730 - Jessica Machado
 //2110117 - Paulo Vieira
 
-// TODO: Impedir o jogador de colocar números se ainda não foi feito NewGame
 // TODO: Impedir o jogador de jogar "e" || "E" || + || - || . || ,
 
 
@@ -17,6 +16,7 @@
   // GLOBAL SCOPE VARIABLES
 	var difficulty;
 	var selectedMode;
+  var isGameStarted = false;
 
   $( document ).ready(function() {
   	var numbers = new Array(2140727, 2140730, 2110117);
@@ -38,6 +38,7 @@
       $("#loading").removeClass("invisible");
       cleanBoard(); //limpar tabela
       callAPIRest(); //callapirest para chamar o board
+      isGameStarted = true;
     });
 
   });
@@ -98,19 +99,31 @@
 
   function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
-      if($(this).val() === ""){
-        cleanUsableCell($(this));
+      if(isGameStarted){        
+        if($(this).val() === ""){
+          cleanUsableCell($(this));
+        }
+        else{
+          insertNumber($(this));
+        }
       }
       else{
-        insertNumber($(this));
+        $(this).val("");
+        showError();
       }
     });
   }
 
   function cellsOnDoubleClickListener(){
     $('input[data-column][data-line]').dblclick(function(){
-      if($(this).val() != ""){
-        selectCell($(this));
+      if(isGameStarted){        
+        if($(this).val() != ""){
+          selectCell($(this));
+        }
+      }
+      else{
+        $(this).val("");
+        showError();
       }
     });
   }
@@ -230,6 +243,10 @@
 
   function cleanUsableCell($elem){
     $elem.removeClass('with-value').removeAttr('style').removeClass('individual-highlight');
+  }
+
+  function showError(){
+    alert("You must click in New Game button first!");
   }
 
 })();
