@@ -3,6 +3,7 @@
 //2110117 - Paulo Vieira
 
 // TODO: Impedir o jogador de colocar números se ainda não foi feito NewGame
+// TODO: Impedir o jogador de jogar "e" || "E" || + || - || . || ,
 
 
 (function(){
@@ -28,6 +29,8 @@
     
     // LISTENERS creation
     cellsOnChangeListener();
+
+    cellsOnDoubleClickListener();
 
     // Evento do botão "New Game"
     $("#btn-new").click(function() {
@@ -84,7 +87,7 @@
 	}
 
   function cleanBoard(){
-    $("input.with-value").val('').removeClass('with-value').removeAttr('style');
+    $("input.with-value").val('').removeClass('with-value').removeAttr('style').removeClass('individual-highlight');
     $("input:disabled.initial").removeAttr("disabled").val('')
   }
 
@@ -94,7 +97,6 @@
 
   function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
-      console.log("change!");
       if($(this).val() === ""){
         $(this).removeClass('with-value');
       }
@@ -102,6 +104,27 @@
         insertNumber($(this));
       }
     });
+  }
+
+  function cellsOnDoubleClickListener(){
+    $('input[data-column][data-line]').dblclick(function(){
+      if($(this).val() != ""){
+        selectCell($(this));
+      }
+    });
+  }
+
+  function selectCell($elem){
+    var row = $elem.attr('data-line');
+    var column = $elem.attr('data-column');
+    var num = $elem.val();
+    var isSelected = $elem.hasClass('individual-highlight');
+
+    if(isSelected){
+      $elem.removeClass('individual-highlight');  
+    } else {
+      $elem.addClass('individual-highlight');
+    }
   }
 
   function insertNumber($elem){
