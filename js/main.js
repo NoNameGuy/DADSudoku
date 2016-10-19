@@ -87,8 +87,9 @@
 	}
 
   function cleanBoard(){
-    $("input.with-value").val('').removeClass('with-value').removeAttr('style').removeClass('individual-highlight');
-    $("input:disabled.initial").removeAttr("disabled").val('')
+    var $cell = $("input.with-value").val('');
+    $("input:disabled.initial").removeAttr("disabled").val('');
+    cleanUsableCell($cell);
   }
 
   function delay5Seconds(functionToExecute){
@@ -98,7 +99,7 @@
   function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
       if($(this).val() === ""){
-        $(this).removeClass('with-value');
+        cleanUsableCell($(this));
       }
       else{
         insertNumber($(this));
@@ -225,6 +226,10 @@
       }
     }
     return $myArray;
+  }
+
+  function cleanUsableCell($elem){
+    $elem.removeClass('with-value').removeAttr('style').removeClass('individual-highlight');
   }
 
 })();
