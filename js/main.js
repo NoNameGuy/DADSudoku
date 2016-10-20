@@ -40,8 +40,10 @@
 
     // Evento dos botões com número
     $('#highlightButtons button').click(function(index){
-      alert($(this).val());
-      //selectNumber($(this).val());
+      //Limpa todas as seleções
+      $('input').removeClass('highlight');
+      //Selecionar todos as celulas com o numero igual ao do botão que foi clicado
+      selectNumber($(this).val()); 
     });
 
   });
@@ -91,8 +93,7 @@
 	}
 
   function cleanBoard(){
-    var $cell = $("input.with-value").val('');
-    $("input:disabled.initial").removeAttr("disabled").val('');
+    var $cell = $('input').val('').removeAttr('disabled');
     cleanUsableCell($cell);
   }
 
@@ -260,7 +261,7 @@
   }
 
   function cleanUsableCell($elem){
-    $elem.removeClass('with-value').removeAttr('style').removeClass('individual-highlight');
+    $elem.removeClass('with-value').removeAttr('style').removeClass('individual-highlight').removeClass('highlight');
   }
 
   function showError(){
@@ -269,7 +270,24 @@
 
   //TODO:
   function selectNumber(number){
-    $inputsWithNumber = $('input[value='+number+']');
+    //Get all the inputs with de number
+    var $inputsWithNumber = $('input').filter(function(){
+      return $(this).val() === number;
+    });
+
+    $inputsWithNumber.each(function(){
+      //Add border selection 
+      $(this).addClass('highlight');
+      console.log("ENTREI!!!");
+    });
+    
+    delay5Seconds(function(){
+      //Remove border selection after 5 seconds
+      $inputsWithNumber.each(function(){
+        $(this).removeClass('highlight');
+      });
+    });
   }
+  
 
 })();
