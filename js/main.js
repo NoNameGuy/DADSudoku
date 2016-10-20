@@ -211,18 +211,24 @@
   }
 
   function animateCell($cell){
-    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); //Animate parent (border)
+    //Animate parent (border)
+    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); 
     
-    if($cell.hasClass("with-value")){ //If it is a cell with value, animate from orange to the original color (orange with opacity)
+    //If it is a cell with value, animate from orange to the original color (orange with opacity)
+    if($cell.hasClass("with-value")){ 
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "rgba(234,162,89,0.6)" }, 500);
-    }else if(!$cell.hasClass("initial")){ //If it is a cell with no value (and without initial class), animate from orange to the original white
+    //If it is a cell with no value (and without initial class), animate from orange to the original white
+    }else if(!$cell.hasClass("initial")){ 
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
     }
   }
 
   function animate($collection){
+    //Goes throw the collection (index by index)
     $collection.each(function(index){
-      $(this).delay(100*index).parent().delay(100*index);
+      //Execute a delay for the input (backgroud) and for the parent (border line)
+      $(this).delay(100*index).parent().delay(100*index); 
+      //Animate a cell (inp)
       animateCell($(this));
     });
   }
