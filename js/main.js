@@ -38,6 +38,12 @@
       isGameStarted = true;
     });
 
+    // Evento dos botões com número
+    $('#highlightButtons button').click(function(index){
+      alert($(this).val());
+      //selectNumber($(this).val());
+    });
+
   });
 
   function changeProjectAuthors(numStudents, numbers, names){
@@ -259,6 +265,11 @@
 
   function showError(){
     alert("You must click in New Game button first!");
+  }
+
+  //TODO:
+  function selectNumber(number){
+    $inputsWithNumber = $('input[value='+number+']');
   }
 
 })();
