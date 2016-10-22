@@ -14,6 +14,7 @@
 	var difficulty;
 	var selectedMode;
   var isGameStarted = false;
+  var isAnimating = false;
 
   $( document ).ready(function() {
   	var numbers = new Array(2140727, 2140730, 2110117);
@@ -72,8 +73,14 @@
 
 	function callAPIRest(){
 		var mode = $("#select-mode option:selected").val();
+    
 
-		$.get("http://198.211.118.123:8080/board/"+mode)
+    /* APAGAR -----> */  var isDebugMode = true;
+    
+
+    var link = "http://198.211.118.123:8080/" + ((!isDebugMode) ? ("board/"+mode) : ("test"));
+
+		$.get(link)
 			.done(function(data) {
 
         //iniciar tabela com o "data"
@@ -155,6 +162,7 @@
   }
 
   function insertNumber($elem){
+    var CONST_CELL_ANIMATION_DELAY = 1300;
     var num = $elem.val();
     var row = $elem.attr('data-line');
     var column = $elem.attr('data-column');
@@ -173,19 +181,35 @@
     var $colCollection = $('input[data-column='+column+']');
     var $quadrantCollection = getArrayFromMatrixQuadrant(row, column);
 
+    var animationQueue = new Queue();
+
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
-      animate($rowCollection);
+      var animateRow = function(){
+        animate($rowCollection);  
+      }
+      animationQueue.enqueue(animateRow);
     }
     
     if(isFullCol($colCollection)){
-      animate($colCollection);
+      var animateColumn = function(){
+        animate($colCollection);  
+      }
+      animationQueue.enqueue(animateColumn);
     }
     
     if(isFullQuadrant($quadrantCollection)){
-      animate($quadrantCollection);
+      var animateQuadrant = function(){  
+        animate($quadrantCollection);
+      }
+      animationQueue.enqueue(animateQuadrant);
     }
     
+    var index = 0;
+    while(animationQueue.size() != 0){
+      setTimeout(animationQueue.dequeue(), CONST_CELL_ANIMATION_DELAY*index++);
+    }
+
     // TODO: Verificar fim de jogo
     // isGameOver();
   }
@@ -231,6 +255,7 @@
   }
 
   function animate($collection){
+    isAnimating = true;
     //Goes throw the collection (index by index)
     $collection.each(function(index){
       //Execute a delay for the input (backgroud) and for the parent (border line)
@@ -278,7 +303,6 @@
     $inputsWithNumber.each(function(){
       //Add border selection 
       $(this).addClass('highlight');
-      console.log("ENTREI!!!");
     });
     
     delay5Seconds(function(){
@@ -289,5 +313,33 @@
     });
   }
   
+  function Queue() {
+      this._oldestIndex = 1;
+      this._newestIndex = 1;
+      this._storage = {};
+  }
+   
+  Queue.prototype.size = function() {
+      return this._newestIndex - this._oldestIndex;
+  };
+   
+  Queue.prototype.enqueue = function(data) {
+      this._storage[this._newestIndex] = data;
+      this._newestIndex++;
+  };
+   
+  Queue.prototype.dequeue = function() {
+      var oldestIndex = this._oldestIndex,
+          newestIndex = this._newestIndex,
+          deletedData;
+   
+      if (oldestIndex !== newestIndex) {
+          deletedData = this._storage[oldestIndex];
+          delete this._storage[oldestIndex];
+          this._oldestIndex++;
+   
+          return deletedData;
+      }
+  };
 
 })();
