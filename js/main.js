@@ -6,22 +6,19 @@
   "use strict";
 
   // CONSTANTS
-  var CONST_NUM_ROWS, CONST_NUM_COLUMNS;
+  var CONST_QUADRANT_NUM_ROWS, CONST_QUADRANT_NUM_COLUMNS;
+  var CONST_TAB_NUM_ROWS, CONST_TAB_NUM_COLUMNS;
+  
   var CONST_NUM_STUDENTS = 3;
-  CONST_NUM_COLUMNS = CONST_NUM_ROWS = 3;
+  CONST_QUADRANT_NUM_COLUMNS = CONST_QUADRANT_NUM_ROWS = 3;
+  CONST_TAB_NUM_ROWS = CONST_TAB_NUM_COLUMNS = 9;
 
   // GLOBAL SCOPE VARIABLES
-	var difficulty;
-	var selectedMode;
   var isGameStarted = false;
-  var isAnimating = false;
 
   $( document ).ready(function() {
   	var numbers = new Array(2140727, 2140730, 2110117);
 	  var names = new Array("Alberto", "Jéssica", "Paulo");
-
-  	// jQuery Code
-  	$(".col-xs-6:last-child").hide(); //Hide do ultimo author
 
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
     
@@ -47,11 +44,18 @@
       selectNumber($(this).val()); 
     });
 
+    // Evento do botão "Check Game"
+    $( '#btn-check' ).click(function(){
+      checkGameOver();
+    });
+
   });
 
   function changeProjectAuthors(numStudents, numbers, names){
-	    for (var i = 1; i <= numStudents; i++)
-		  changeAuthor(i, numbers[i-1], names[i-1]);
+    // Hide do ultimo author
+	  $(".col-xs-6:last-child").hide(); 
+    for (var i = 1; i <= numStudents; i++)
+      changeAuthor(i, numbers[i-1], names[i-1]);
   }
 
   function changeAuthor(curAuthor, number, name){
@@ -255,7 +259,6 @@
   }
 
   function animate($collection){
-    isAnimating = true;
     //Goes throw the collection (index by index)
     $collection.each(function(index){
       //Execute a delay for the input (backgroud) and for the parent (border line)
@@ -271,14 +274,14 @@
     var $myArray;
 
     // Get the quadrant initial row and column
-    quadrantInitRow = row - (row % CONST_NUM_ROWS);
-    quadrantInitColumn = column - (column % CONST_NUM_COLUMNS);
+    quadrantInitRow = row - (row % CONST_QUADRANT_NUM_ROWS);
+    quadrantInitColumn = column - (column % CONST_QUADRANT_NUM_COLUMNS);
 
     $myArray = $('input[data-line='+quadrantInitRow+'][data-column='+quadrantInitColumn+']');
     
     // Convert the quadrant to a linear array structure
-    for(var i = 0; i < CONST_NUM_ROWS; i++){
-      for(var j = 0; j < CONST_NUM_COLUMNS; j++){
+    for(var i = 0; i < CONST_QUADRANT_NUM_ROWS; i++){
+      for(var j = 0; j < CONST_QUADRANT_NUM_COLUMNS; j++){
         $myArray = $myArray.add($('input[data-line='+(quadrantInitRow+i)+'][data-column='+(quadrantInitColumn+j)+']'));
       }
     }
@@ -310,6 +313,78 @@
       $inputsWithNumber.each(function(){
         $(this).removeClass('highlight');
       });
+    });
+  }
+
+  function checkGameOver(){
+    if(isGameStarted){
+      var $loadingGIF = $( '#loading' );
+      var link = 'http://198.211.118.123:8080/board/check';
+      $loadingGIF.toggleClass('invisible');
+      
+      $.ajax({
+        method      : "POST",
+        url         : link,
+        data        : JSON.stringify(setBoardRequest()),
+        contentType : 'application/json'
+      })
+        .done(function(data){
+          if(data.finished === true){
+            gameOver();
+          }
+          else{
+            handleConflicts(data.conflicts);
+          }
+        })
+        .fail(function(){
+          console.log('There was an error sending AJAX POST request');
+        })
+        .always(function(){
+          $loadingGIF.toggleClass('invisible');
+        });
+    }
+    else
+      showError();
+  }
+
+  function gameOver(){
+    console.log('Game Over!');
+  }
+
+  function setBoardRequest(){
+    var board = [];
+    var $curCell, curValue;
+
+    $.each($( 'input[data-line][data-column]' ), function(){
+      $curCell = $(this);
+      curValue = $curCell.val();
+
+      if(curValue !== '' && curValue !== undefined){
+        board.push({
+          "line"   :   parseInt($curCell.attr('data-line')),
+          "column" :   parseInt($curCell.attr('data-column')),
+          "value"  :   parseInt($curCell.val()),
+          "fixed"  :   $curCell.prop('disabled')
+        })
+      }
+    });
+    return board;
+  }
+
+  function handleConflicts(conflictsArray){
+    var curCell;
+    
+    for(var i = 0; i < conflictsArray.length; i++){
+      curCell = conflictsArray[i];
+      toggleConflicts(curCell.line, curCell.column);
+    }
+  }
+
+  function toggleConflicts(line, column){
+    var $cell = $( 'input[data-line='+line+'][data-column='+column+']' );
+    $cell.toggleClass('individual-conflict');
+    delay5Seconds(function(){
+      $cell.toggleClass('individual-conflict');
     });
   }
   
