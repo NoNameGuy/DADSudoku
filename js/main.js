@@ -16,10 +16,11 @@
   // GLOBAL SCOPE VARIABLES
   var isGameStarted = false;
   var startTime;
+  var cellsMissing;
 
   $( document ).ready(function() {
-  	var numbers = new Array(2140727, 2140730, 2110117);
-	  var names = new Array("Alberto", "Jéssica", "Paulo");
+    var numbers = new Array(2140727, 2140730, 2110117);
+    var names = new Array("Alberto", "Jéssica", "Paulo");
 
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
 
@@ -87,6 +88,7 @@
 
 		$.get(link)
 			.done(function(data) {
+        cellsMissing = CONST_TAB_NUM_ROWS*CONST_TAB_NUM_COLUMNS - data.length;
 
         //iniciar tabela com o "data"
         for(var i = 0; i < data.length; i++){
@@ -118,6 +120,7 @@
       if(isGameStarted){
         if($(this).val() === ""){
           cleanUsableCell($(this));
+          cellsMissing++;
         }
         else{
           insertNumber($(this));
@@ -178,6 +181,8 @@
       return;
     }
 
+    cellsMissing--;
+
     // Coloca o elemento com estado "com valor"
     $elem.addClass('with-value');
 
@@ -215,8 +220,9 @@
       setTimeout(animationQueue.dequeue(), CONST_CELL_ANIMATION_DELAY*index++);
     }
 
-    // TODO: Verificar fim de jogo
-    // isGameOver();
+    // Verificar fim de jogo
+    if(cellsMissing == 0)
+      checkGameOver();
   }
 
   function isCellCollectionFull($collection){
