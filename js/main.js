@@ -8,20 +8,21 @@
   // CONSTANTS
   var CONST_QUADRANT_NUM_ROWS, CONST_QUADRANT_NUM_COLUMNS;
   var CONST_TAB_NUM_ROWS, CONST_TAB_NUM_COLUMNS;
-  
+
   var CONST_NUM_STUDENTS = 3;
   CONST_QUADRANT_NUM_COLUMNS = CONST_QUADRANT_NUM_ROWS = 3;
   CONST_TAB_NUM_ROWS = CONST_TAB_NUM_COLUMNS = 9;
 
   // GLOBAL SCOPE VARIABLES
   var isGameStarted = false;
+  var startTime;
 
   $( document ).ready(function() {
   	var numbers = new Array(2140727, 2140730, 2110117);
 	  var names = new Array("Alberto", "Jéssica", "Paulo");
 
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
-    
+
     // LISTENERS creation
     cellsOnChangeListener();
     cellsOnKeyUpListener();
@@ -41,7 +42,7 @@
       //Limpa todas as seleções
       $('input').removeClass('highlight');
       //Selecionar todos as celulas com o numero igual ao do botão que foi clicado
-      selectNumber($(this).val()); 
+      selectNumber($(this).val());
     });
 
     // Evento do botão "Check Game"
@@ -53,7 +54,7 @@
 
   function changeProjectAuthors(numStudents, numbers, names){
     // Hide do ultimo author
-	  $(".col-xs-6:last-child").hide(); 
+	  $(".col-xs-6:last-child").hide();
     for (var i = 1; i <= numStudents; i++)
       changeAuthor(i, numbers[i-1], names[i-1]);
   }
@@ -77,10 +78,10 @@
 
 	function callAPIRest(){
 		var mode = $("#select-mode option:selected").val();
-    
+
 
     /* APAGAR -----> */  var isDebugMode = true;
-    
+
 
     var link = "http://198.211.118.123:8080/" + ((!isDebugMode) ? ("board/"+mode) : ("test"));
 
@@ -95,7 +96,7 @@
           .addClass("initial")
           .attr("disabled", true);
         }
-
+        startTime = new Date();
 				$("#loading").addClass("invisible"); //loading -> $("#loading").addClass("invisible");
 
 			}).fail(function() {
@@ -114,7 +115,7 @@
 
   function cellsOnChangeListener(){
     $('input[data-column][data-line]').change(function(){
-      if(isGameStarted){        
+      if(isGameStarted){
         if($(this).val() === ""){
           cleanUsableCell($(this));
         }
@@ -131,7 +132,7 @@
 
   function cellsOnDoubleClickListener(){
     $('input[data-column][data-line]').dblclick(function(){
-      if(isGameStarted){        
+      if(isGameStarted){
         if($(this).val() != ""){
           selectCell($(this));
         }
@@ -159,7 +160,7 @@
     var isSelected = $elem.hasClass('individual-highlight');
 
     if(isSelected){
-      $elem.removeClass('individual-highlight');  
+      $elem.removeClass('individual-highlight');
     } else {
       $elem.addClass('individual-highlight');
     }
@@ -176,10 +177,10 @@
       $elem.val(undefined);
       return;
     }
-    
+
     // Coloca o elemento com estado "com valor"
     $elem.addClass('with-value');
-    
+
     // Obtem os arrays com a respetiva linha e coluna
     var $rowCollection = $('input[data-line='+row+']');
     var $colCollection = $('input[data-column='+column+']');
@@ -190,25 +191,25 @@
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
       var animateRow = function(){
-        animate($rowCollection);  
+        animate($rowCollection);
       }
       animationQueue.enqueue(animateRow);
     }
-    
+
     if(isFullCol($colCollection)){
       var animateColumn = function(){
-        animate($colCollection);  
+        animate($colCollection);
       }
       animationQueue.enqueue(animateColumn);
     }
-    
+
     if(isFullQuadrant($quadrantCollection)){
-      var animateQuadrant = function(){  
+      var animateQuadrant = function(){
         animate($quadrantCollection);
       }
       animationQueue.enqueue(animateQuadrant);
     }
-    
+
     var index = 0;
     while(animationQueue.size() != 0){
       setTimeout(animationQueue.dequeue(), CONST_CELL_ANIMATION_DELAY*index++);
@@ -247,13 +248,13 @@
 
   function animateCell($cell){
     //Animate parent (border)
-    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500); 
-    
+    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
+
     //If it is a cell with value, animate from orange to the original color (orange with opacity)
-    if($cell.hasClass("with-value")){ 
+    if($cell.hasClass("with-value")){
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "rgba(234,162,89,0.6)" }, 500);
     //If it is a cell with no value (and without initial class), animate from orange to the original white
-    }else if(!$cell.hasClass("initial")){ 
+    }else if(!$cell.hasClass("initial")){
       $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
     }
   }
@@ -262,12 +263,12 @@
     //Goes throw the collection (index by index)
     $collection.each(function(index){
       //Execute a delay for the input (backgroud) and for the parent (border line)
-      $(this).delay(100*index).parent().delay(100*index); 
+      $(this).delay(100*index).parent().delay(100*index);
       //Animate a cell (inp)
       animateCell($(this));
     });
   }
-  
+
   function getArrayFromMatrixQuadrant(row, column){
     // Get the position of the element in the quadrant
     var quadrantInitRow, quadrantInitColumn;
@@ -278,7 +279,7 @@
     quadrantInitColumn = column - (column % CONST_QUADRANT_NUM_COLUMNS);
 
     $myArray = $('input[data-line='+quadrantInitRow+'][data-column='+quadrantInitColumn+']');
-    
+
     // Convert the quadrant to a linear array structure
     for(var i = 0; i < CONST_QUADRANT_NUM_ROWS; i++){
       for(var j = 0; j < CONST_QUADRANT_NUM_COLUMNS; j++){
@@ -304,10 +305,10 @@
     });
 
     $inputsWithNumber.each(function(){
-      //Add border selection 
+      //Add border selection
       $(this).addClass('highlight');
     });
-    
+
     delay5Seconds(function(){
       //Remove border selection after 5 seconds
       $inputsWithNumber.each(function(){
@@ -321,7 +322,7 @@
       var $loadingGIF = $( '#loading' );
       var link = 'http://198.211.118.123:8080/board/check';
       $loadingGIF.toggleClass('invisible');
-      
+
       $.ajax({
         method      : "POST",
         url         : link,
@@ -378,7 +379,7 @@
 
   function handleConflicts(conflictsArray){
     var curCell;
-    
+
     for(var i = 0; i < conflictsArray.length; i++){
       curCell = conflictsArray[i];
       toggleConflicts(curCell.line, curCell.column);
@@ -392,34 +393,53 @@
       $cell.toggleClass('individual-conflict');
     });
   }
-  
+
   function Queue() {
       this._oldestIndex = 1;
       this._newestIndex = 1;
       this._storage = {};
   }
-   
+
   Queue.prototype.size = function() {
       return this._newestIndex - this._oldestIndex;
   };
-   
+
   Queue.prototype.enqueue = function(data) {
       this._storage[this._newestIndex] = data;
       this._newestIndex++;
   };
-   
+
   Queue.prototype.dequeue = function() {
       var oldestIndex = this._oldestIndex,
           newestIndex = this._newestIndex,
           deletedData;
-   
+
       if (oldestIndex !== newestIndex) {
           deletedData = this._storage[oldestIndex];
           delete this._storage[oldestIndex];
           this._oldestIndex++;
-   
+
           return deletedData;
       }
+  };
+
+  function time() {
+
+    //http://stackoverflow.com/questions/1210701/compute-elapsed-time
+
+    var timeDiff = new Date() - startTime;
+    // get seconds (Original had 'round' which incorrectly counts 0:28, 0:29, 1:30 ... 1:59, 1:0)
+    timeDiff/=1000;
+    var seconds = Math.round(timeDiff%60);
+    timeDiff /= 60;
+    // get minutes
+    var minutes = Math.round(timeDiff%60);
+    timeDiff /= 60;
+    // get hours
+    var hours = Math.round(timeDiff%24);
+
+    console.log("hours " + hours + " minutes " + minutes + " seconds " + seconds);
+
   };
 
 })();
