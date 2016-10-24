@@ -350,6 +350,9 @@
   function gameOver(){
     $( '#dialog' ).dialog();
     $( '#message' ).text('Game Won, congratulations!!');
+    $( '#dialog' ).append("<hr />").attr('style', "margin: -20 -20");
+
+
     console.log('Game Over!');
   }
 
