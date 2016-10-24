@@ -447,8 +447,8 @@
   };
 
   function highlightGree(){
+    //Change de color for gree of the cells with value
     $(".with-value").removeAttr("style").addClass("finished");
-    console.log($(".with-value").length);
   }
 
 })();
