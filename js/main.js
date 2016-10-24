@@ -349,12 +349,15 @@
   }
 
   function gameOver(){
-    $( '#dialog' ).dialog();
-    $( '#message' ).text('Game Won, congratulations!!');
-    $( '#dialog' ).append("<hr />").attr('style', "margin: -20 -20");
-
-
-    console.log('Game Over!');
+    var $dialog = $( '#dialog' );
+    var $message = $( '#message' );
+    
+    $dialog.dialog();
+    $message.text('Game Won, congratulations!!');
+    $dialog.append("<hr />");
+    $dialog.attr('style', 'padding-right:0em; padding-left:0em');
+    $message.attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:0px');
+    $dialog.append('<button id="Ok" text="Ok"/>')
   }
 
   function setBoardRequest(){
