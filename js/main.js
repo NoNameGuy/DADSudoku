@@ -348,16 +348,18 @@
       showError();
   }
 
+  function showDialog(){
+    $( '#message' ).text('Game Won, congratulations!!').attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:10px');;
+    $( '#time' ).text(time()).attr('style', 'margin: 10px');
+    $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>').dialog();
+    $( '#Ok' ).attr('style', 'float:right; margin-right:20px; padding: 5px 10px 5px 10px; text-align: center').click(function(){
+      $('.ui-dialog').toggle();
+    });
+  }
+
   function gameOver(){
-    var $dialog = $( '#dialog' );
-    var $message = $( '#message' );
-    
-    $dialog.dialog();
-    $message.text('Game Won, congratulations!!');
-    $dialog.append("<hr />");
-    $dialog.attr('style', 'padding-right:0em; padding-left:0em');
-    $message.attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:0px');
-    $dialog.append('<button id="Ok" text="Ok"/>')
+    showDialog();
+    // mudar a cor para verde
   }
 
   function setBoardRequest(){
@@ -441,8 +443,7 @@
     // get hours
     var hours = Math.round(timeDiff%24);
 
-    console.log("hours " + hours + " minutes " + minutes + " seconds " + seconds);
-
+    return "Time: " + ((hours < 10) ? "0" : "") + hours+":"+((minutes < 10) ? "0" : "")+minutes+":"+((seconds < 10) ? "0" : "")+seconds;
   };
 
 })();
