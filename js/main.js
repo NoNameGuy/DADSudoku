@@ -348,6 +348,8 @@
   }
 
   function gameOver(){
+    $( '#dialog' ).dialog();
+    $( '#message' ).text('Game Won, congratulations!!');
     console.log('Game Over!');
   }
 
