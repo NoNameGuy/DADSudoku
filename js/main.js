@@ -359,7 +359,7 @@
 
   function gameOver(){
     showDialog();
-    // mudar a cor para verde
+    highlightGree();
   }
 
   function setBoardRequest(){
@@ -445,5 +445,10 @@
 
     return "Time: " + ((hours < 10) ? "0" : "") + hours+":"+((minutes < 10) ? "0" : "")+minutes+":"+((seconds < 10) ? "0" : "")+seconds;
   };
+
+  function highlightGree(){
+    $(".with-value").removeAttr("style").addClass("finished");
+    console.log($(".with-value").length);
+  }
 
 })();
