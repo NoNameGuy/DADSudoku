@@ -215,14 +215,18 @@
       animationQueue.enqueue(animateQuadrant);
     }
 
+    // Verificar fim de jogo
+    if(cellsMissing == 0){
+      checkGameOver();
+      animationQueue.enqueue(highlightGreen);
+    }
+
+
     var index = 0;
     while(animationQueue.size() != 0){
       setTimeout(animationQueue.dequeue(), CONST_CELL_ANIMATION_DELAY*index++);
     }
 
-    // Verificar fim de jogo
-    if(cellsMissing == 0)
-      checkGameOver();
   }
 
   function isCellCollectionFull($collection){
@@ -365,7 +369,6 @@
 
   function gameOver(){
     showDialog();
-    highlightGree();
   }
 
   function setBoardRequest(){
@@ -452,7 +455,7 @@
     return "Time: " + ((hours < 10) ? "0" : "") + hours+":"+((minutes < 10) ? "0" : "")+minutes+":"+((seconds < 10) ? "0" : "")+seconds;
   };
 
-  function highlightGree(){
+  function highlightGreen(){
     //Change de color for gree of the cells with value
     $(".with-value").removeAttr("style").addClass("finished");
   }
