@@ -107,7 +107,7 @@
 	}
 
   function cleanBoard(){
-    var $cell = $('input').val('').removeAttr('disabled');
+    var $cell = $('input').val('').removeAttr('disabled').removeClass("finished");
     cleanUsableCell($cell);
   }
 
@@ -181,7 +181,10 @@
       return;
     }
 
+    //So decrementa o valor de celulas por preencher se anteriormente não existia nenhum valor naquela celula
+    if(!$elem.hasClass("with-value")){
     cellsMissing--;
+    }
 
     // Coloca o elemento com estado "com valor"
     $elem.addClass('with-value');
@@ -215,12 +218,12 @@
       animationQueue.enqueue(animateQuadrant);
     }
 
-    // Verificar fim de jogo
+    //Verifica se é fim de jogo
     if(cellsMissing == 0){
       checkGameOver();
-      animationQueue.enqueue(highlightGreen);
+    }else{
+      removeHighlightGreen();
     }
-
 
     var index = 0;
     while(animationQueue.size() != 0){
@@ -258,15 +261,7 @@
 
   function animateCell($cell){
     //Animate parent (border)
-    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
-
-    //If it is a cell with value, animate from orange to the original color (orange with opacity)
-    if($cell.hasClass("with-value")){
-      $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "rgba(234,162,89,0.6)" }, 500);
-    //If it is a cell with no value (and without initial class), animate from orange to the original white
-    }else if(!$cell.hasClass("initial")){
-      $cell.animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "#ffff" }, 500);
-    }
+    $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "" }, 500);
   }
 
   function animate($collection){
@@ -342,9 +337,11 @@
         .done(function(data){
           if(data.finished === true){
             gameOver();
+            highlightGreen();
           }
           else{
             handleConflicts(data.conflicts);
+            
           }
         })
         .fail(function(){
@@ -353,9 +350,9 @@
         .always(function(){
           $loadingGIF.toggleClass('invisible');
         });
-    }
-    else
+    }else{
       showError();
+    }
   }
 
   function showDialog(){
@@ -458,6 +455,11 @@
   function highlightGreen(){
     //Change de color for gree of the cells with value
     $(".with-value").removeAttr("style").addClass("finished");
+  }
+
+  function removeHighlightGreen(){
+    //Change de color for gree of the cells with value
+    $(".finished").removeAttr("style").addClass("with-value");
   }
 
 })();
