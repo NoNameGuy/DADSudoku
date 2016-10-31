@@ -341,7 +341,7 @@
           }
           else{
             handleConflicts(data.conflicts);
-            
+
           }
         })
         .fail(function(){
@@ -454,7 +454,7 @@
 
   function highlightGreen(){
     //Change de color for gree of the cells with value
-    $(".with-value").removeAttr("style").addClass("finished");
+    $(".with-value").removeAttr("style").addClass("finished").attr("disabled", true);
   }
 
   function removeHighlightGreen(){
