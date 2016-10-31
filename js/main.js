@@ -23,6 +23,7 @@
     var names = new Array("Alberto", "Jéssica", "Paulo");
 
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
+    makeDialogContent();
 
     // LISTENERS creation
     cellsOnChangeListener();
@@ -355,12 +356,16 @@
     }
   }
 
+  function makeDialogContent(){
+    $( '#message' ).text('Game Won, congratulations!!').attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:10px');
+    $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>');
+  }
+
   function showDialog(){
-    $( '#message' ).text('Game Won, congratulations!!').attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:10px');;
     $( '#time' ).text(time()).attr('style', 'margin: 10px');
-    $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>').dialog();
+    $( '#dialog' ).dialog();
     $( '#Ok' ).attr('style', 'float:right; margin-right:20px; padding: 5px 10px 5px 10px; text-align: center').click(function(){
-      $('.ui-dialog').toggle();
+      $('.ui-dialog-content').dialog('close');
     });
   }
 
