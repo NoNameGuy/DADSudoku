@@ -23,35 +23,7 @@
     var names = new Array("Alberto", "Jéssica", "Paulo");
 
   	changeProjectAuthors(CONST_NUM_STUDENTS, numbers, names);
-    makeDialogContent();
-
-    // LISTENERS creation
-    cellsOnChangeListener();
-    cellsOnKeyUpListener();
-    cellsOnDoubleClickListener();
-
-    // Evento do botão "New Game"
-    $("#btn-new").click(function() {
-      event.preventDefault();
-      $("#loading").removeClass("invisible");
-      cleanBoard(); //limpar tabela
-      callAPIRest(); //callapirest para chamar o board
-      isGameStarted = true;
-    });
-
-    // Evento dos botões com número
-    $('#highlightButtons button').click(function(index){
-      //Limpa todas as seleções
-      $('input').removeClass('highlight');
-      //Selecionar todos as celulas com o numero igual ao do botão que foi clicado
-      selectNumber($(this).val());
-    });
-
-    // Evento do botão "Check Game"
-    $( '#btn-check' ).click(function(){
-      checkGameOver();
-    });
-
+    init();
   });
 
   function changeProjectAuthors(numStudents, numbers, names){
@@ -68,8 +40,6 @@
   		return;
 
 	  var identifier = ".col-xs-6:nth-child("+(curAuthor+1)+")";
-
-	  // TODO: Instead of making 3 jQuery successive calls, store in a variable the access of parent's div.
   	// Change students' photo size
   	$(identifier+" img").css('height', photoSize).css('width', photoSize);
   	// Change students' number
@@ -90,21 +60,22 @@
 		$.get(link)
 			.done(function(data) {
         cellsMissing = CONST_TAB_NUM_ROWS*CONST_TAB_NUM_COLUMNS - data.length;
-
         //iniciar tabela com o "data"
-        for(var i = 0; i < data.length; i++){
+        $.each(data, function(i){
           $("input[data-column="+data[i].column+"][data-line="+data[i].line+"]")
           .val(data[i].value)
           .attr("value", data[i].value)
           .addClass("initial")
           .attr("disabled", true);
-        }
+        });
         startTime = new Date();
-				$("#loading").addClass("invisible"); //loading -> $("#loading").addClass("invisible");
-
-			}).fail(function() {
-				console.log("FAIL CALLING API REST")
-			});
+      }).fail(function() {
+        console.log("FAIL CALLING API REST")
+        alert('There was an error contacting the server...');
+      }).
+      always(function(){        
+				$("#loading").toggleClass("invisible");
+      });
 	}
 
   function cleanBoard(){
@@ -114,6 +85,16 @@
 
   function delay5Seconds(functionToExecute){
     setTimeout(functionToExecute, 5000);
+  }
+
+  function init(){
+    cellsOnChangeListener();
+    cellsOnKeyUpListener();
+    cellsOnDoubleClickListener();
+    btnNewGameOnClickListener();
+    btnNumberHighlightOnClickListener();
+    btnGameOverOnClickListener();
+    buildDialogContent();
   }
 
   function cellsOnChangeListener(){
@@ -151,23 +132,38 @@
   function cellsOnKeyUpListener(){
     $('input[data-column][data-line]').keyup(function(){
       var $elem = $(this);
+      // Verificação necessária para apagar carateres inseridos como "e", "E", ".", "," do tabuleiro
       if($elem.val() === ''){
         $elem.val('');
       }
     });
   }
 
-  function selectCell($elem){
-    var row = $elem.attr('data-line');
-    var column = $elem.attr('data-column');
-    var num = $elem.val();
-    var isSelected = $elem.hasClass('individual-highlight');
+  function btnNewGameOnClickListener(){
+    $("#btn-new").click(function() {
+      event.preventDefault();
+      $("#loading").toggleClass("invisible");
+      cleanBoard(); 
+      callAPIRest();
+      isGameStarted = true;
+    });
+  }
 
-    if(isSelected){
-      $elem.removeClass('individual-highlight');
-    } else {
-      $elem.addClass('individual-highlight');
-    }
+  function btnNumberHighlightOnClickListener(){
+    $('#highlightButtons button').click(function(index){
+      $('input').removeClass('highlight');
+      highlightNumber($(this).val());
+    });
+  }
+
+  function btnGameOverOnClickListener(){
+    $( '#btn-check' ).click(function(){
+      checkGameOver();
+    });
+  }
+
+  function selectCell($elem){
+    $elem.toggleClass('individual-highlight');
   }
 
   function insertNumber($elem){
@@ -193,28 +189,28 @@
     // Obtem os arrays com a respetiva linha e coluna
     var $rowCollection = $('input[data-line='+row+']');
     var $colCollection = $('input[data-column='+column+']');
-    var $quadrantCollection = getArrayFromMatrixQuadrant(row, column);
+    var $quadrantCollection = getArrayFromQuadrantAdapter(row, column);
 
     var animationQueue = new Queue();
 
     // Se a linha ou a coluna estiverem preenchidas, faz animação
     if(isFullRow($rowCollection)){
       var animateRow = function(){
-        animate($rowCollection);
+        animateCollection($rowCollection);
       }
       animationQueue.enqueue(animateRow);
     }
 
     if(isFullCol($colCollection)){
       var animateColumn = function(){
-        animate($colCollection);
+        animateCollection($colCollection);
       }
       animationQueue.enqueue(animateColumn);
     }
 
     if(isFullQuadrant($quadrantCollection)){
       var animateQuadrant = function(){
-        animate($quadrantCollection);
+        animateCollection($quadrantCollection);
       }
       animationQueue.enqueue(animateQuadrant);
     }
@@ -222,15 +218,12 @@
     //Verifica se é fim de jogo
     if(cellsMissing == 0){
       checkGameOver();
-    }else{
-      removeHighlightGreen();
     }
 
     var index = 0;
     while(animationQueue.size() != 0){
       setTimeout(animationQueue.dequeue(), CONST_CELL_ANIMATION_DELAY*index++);
     }
-
   }
 
   function isCellCollectionFull($collection){
@@ -265,7 +258,7 @@
     $cell.parent().animate({backgroundColor: "#ffa902" }, 500).animate({backgroundColor: "" }, 500);
   }
 
-  function animate($collection){
+  function animateCollection($collection){
     //Goes throw the collection (index by index)
     $collection.each(function(index){
       //Execute a delay for the input (backgroud) and for the parent (border line)
@@ -275,7 +268,7 @@
     });
   }
 
-  function getArrayFromMatrixQuadrant(row, column){
+  function getArrayFromQuadrantAdapter(row, column){
     // Get the position of the element in the quadrant
     var quadrantInitRow, quadrantInitColumn;
     var $myArray;
@@ -303,8 +296,7 @@
     alert("You must click in New Game button first!");
   }
 
-  //TODO:
-  function selectNumber(number){
+  function highlightNumber(number){
     //Get all the inputs with de number
     var $inputsWithNumber = $('input').filter(function(){
       return $(this).val() === number;
@@ -335,42 +327,39 @@
         data        : JSON.stringify(setBoardRequest()),
         contentType : 'application/json'
       })
-        .done(function(data){
-          if(data.finished === true){
-            gameOver();
-            highlightGreen();
-          }
-          else{
-            handleConflicts(data.conflicts);
+      .done(function(data){
+        if(data.finished === true){
+          gameOver();
+          highlightGreen();
+        }
+        else{
+          handleConflicts(data.conflicts);
 
-          }
-        })
-        .fail(function(){
-          console.log('There was an error sending AJAX POST request');
-        })
-        .always(function(){
-          $loadingGIF.toggleClass('invisible');
-        });
+        }
+      })
+      .fail(function(){
+        console.log('There was an error sending AJAX POST request');
+        alert('There was an error contacting the server...');
+      })
+      .always(function(){
+        $loadingGIF.toggleClass('invisible');
+      });
     }else{
       showError();
     }
   }
 
-  function makeDialogContent(){
+  function buildDialogContent(){
     $( '#message' ).text('Game Won, congratulations!!').attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:10px');
     $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>');
   }
 
-  function showDialog(){
+  function gameOver(){
     $( '#time' ).text(time()).attr('style', 'margin: 10px');
     $( '#dialog' ).dialog();
     $( '#Ok' ).attr('style', 'float:right; margin-right:20px; padding: 5px 10px 5px 10px; text-align: center').click(function(){
       $('.ui-dialog-content').dialog('close');
     });
-  }
-
-  function gameOver(){
-    showDialog();
   }
 
   function setBoardRequest(){
@@ -396,75 +385,59 @@
   function handleConflicts(conflictsArray){
     var curCell;
 
-    for(var i = 0; i < conflictsArray.length; i++){
+    $.each(conflictsArray, function(i){
       curCell = conflictsArray[i];
       toggleConflicts(curCell.line, curCell.column);
-    }
+    });
   }
 
   function toggleConflicts(line, column){
-    var $cell = $( 'input[data-line='+line+'][data-column='+column+']' );
-    $cell.toggleClass('individual-conflict');
+    var $cell = $( 'input[data-line='+line+'][data-column='+column+']' ).toggleClass('individual-conflict');
     delay5Seconds(function(){
       $cell.toggleClass('individual-conflict');
     });
   }
 
-  function Queue() {
-      this._oldestIndex = 1;
-      this._newestIndex = 1;
-      this._storage = {};
-  }
-
-  Queue.prototype.size = function() {
-      return this._newestIndex - this._oldestIndex;
-  };
-
-  Queue.prototype.enqueue = function(data) {
-      this._storage[this._newestIndex] = data;
-      this._newestIndex++;
-  };
-
-  Queue.prototype.dequeue = function() {
-      var oldestIndex = this._oldestIndex,
-          newestIndex = this._newestIndex,
-          deletedData;
-
-      if (oldestIndex !== newestIndex) {
-          deletedData = this._storage[oldestIndex];
-          delete this._storage[oldestIndex];
-          this._oldestIndex++;
-
-          return deletedData;
-      }
-  };
-
   function time() {
-
-    //http://stackoverflow.com/questions/1210701/compute-elapsed-time
-
+    // http://stackoverflow.com/questions/1210701/compute-elapsed-time
     var timeDiff = new Date() - startTime;
-    // get seconds (Original had 'round' which incorrectly counts 0:28, 0:29, 1:30 ... 1:59, 1:0)
-    timeDiff/=1000;
+    timeDiff /= 1000;
     var seconds = Math.round(timeDiff%60);
     timeDiff /= 60;
-    // get minutes
     var minutes = Math.round(timeDiff%60);
     timeDiff /= 60;
-    // get hours
     var hours = Math.round(timeDiff%24);
-
     return "Time: " + ((hours < 10) ? "0" : "") + hours+":"+((minutes < 10) ? "0" : "")+minutes+":"+((seconds < 10) ? "0" : "")+seconds;
   };
 
   function highlightGreen(){
-    //Change de color for gree of the cells with value
     $(".with-value").removeAttr("style").addClass("finished").attr("disabled", true);
   }
 
-  function removeHighlightGreen(){
-    //Change de color for gree of the cells with value
-    $(".finished").removeAttr("style").addClass("with-value");
-  }
+  function Queue() {
+    this.oldestIndex = 1;
+    this.newestIndex = 1;
+    this.list = {};
+    
+    Queue.prototype.size = function() {
+        return this.newestIndex - this.oldestIndex;
+    };
 
+    Queue.prototype.enqueue = function(data) {
+        this.list[this.newestIndex++] = data;
+    };
+
+    Queue.prototype.dequeue = function() {
+        var oldestIndex = this.oldestIndex,
+            newestIndex = this.newestIndex,
+            deletedData;
+
+        if (oldestIndex !== newestIndex) {
+            deletedData = this.list[oldestIndex];
+            delete this.list[oldestIndex];
+            this.oldestIndex++;
+            return deletedData;
+        }
+    };
+  }
 })();
