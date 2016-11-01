@@ -51,11 +51,7 @@
 	function callAPIRest(){
 		var mode = $("#select-mode option:selected").val();
 
-
-    /* APAGAR -----> */  var isDebugMode = true;
-
-
-    var link = "http://198.211.118.123:8080/" + ((!isDebugMode) ? ("board/"+mode) : ("test"));
+    var link = "http://198.211.118.123:8080/" + "board/" + mode;
 
 		$.get(link)
 			.done(function(data) {
@@ -173,7 +169,7 @@
     var column = $elem.attr('data-column');
 
     // Se o número tiver fora do intervalo, apaga-o
-    if(num < 0 || num > 9){
+    if(num < 1 || num > 9){
       $elem.val(undefined);
       return;
     }
@@ -351,12 +347,12 @@
 
   function buildDialogContent(){
     $( '#message' ).text('Game Won, congratulations!!').attr('style', 'margin-right:10px;margin-left:10px;margin-bottom:10px');
-    $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>');
+    $( '#dialog' ).append("<hr />").attr('style', 'padding-right:0em; padding-left:0em').append('<button id="Ok"> Ok </button>').toggle();
   }
 
   function gameOver(){
     $( '#time' ).text(time()).attr('style', 'margin: 10px');
-    $( '#dialog' ).dialog();
+    $( '#dialog' ).toggle().dialog();
     $( '#Ok' ).attr('style', 'float:right; margin-right:20px; padding: 5px 10px 5px 10px; text-align: center').click(function(){
       $('.ui-dialog-content').dialog('close');
     });
